@@ -1,6 +1,6 @@
 # webloc
 
-*webloc* is a Ruby library that can read from and write to <tt>.webloc</tt> files as used on OS X.
+*webloc* is a Ruby library that can read from and write to <tt>.webloc</tt> files as used on Mac OS X.
 
 It works on both Ruby 1.9.2 and 1.8.7 (though development is focused on 1.9.2).
 
