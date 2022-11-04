@@ -33,6 +33,6 @@ class Webloc
   end
   
   def save(filename)
-    File.open(filename, 'w:binary') { |f| f.print data }
+    File.open(filename, 'wb') { |f| f.write data }
   end
 end
