@@ -1,8 +1,8 @@
 # webloc
 
-*webloc* is a Ruby library that can read from and write to <tt>.webloc</tt> files as used on Mac OS X.
+*webloc* is a Ruby library that can read from and write to <tt>.webloc</tt> files as used on macOS.
 
-It works on both Ruby 1.9.2 and 1.8.7 (though development is focused on 1.9.2).
+It works on Ruby 1.8.7 and up, including Ruby 3.x. It appears to still work on macOS Monterey too, so I have made a quick tidy up and release for 2022!
 
 ## Installation
 
@@ -10,18 +10,16 @@ It works on both Ruby 1.9.2 and 1.8.7 (though development is focused on 1.9.2).
     
 ## Usage
 
-It's pretty simple.
-
 Reading a .webloc file:
 
     Webloc.load(ARGV.first).url
 
 Writing to a .webloc file:
 
-    Webloc.new('http://peterc.org/').save('peterc.webloc')
+    Webloc.new('https://rubyweekly.com/').save('rubyweekly.webloc')
 
 ## License
 
-Copyright (C) 2011 Peter Cooper
+Copyright (C) 2011-2022 Peter Cooper
 
 webloc is licensed under the terms of the MIT License
