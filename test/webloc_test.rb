@@ -20,7 +20,7 @@ class WeblocTest < Test::Unit::TestCase
   end
   
   def test_webloc_generates_valid_data
-    data = File.read(File.dirname(__FILE__) + '/oldstyle.webloc')
+    data = File.read(File.dirname(__FILE__) + '/oldstyle.webloc').b
     assert_equal data, Webloc.new('https://github.com/peterc/webloc').data
   end
 
@@ -33,7 +33,7 @@ class WeblocTest < Test::Unit::TestCase
     file = Tempfile.new('test-webloc')
     begin
       Webloc.new('https://github.com/peterc/webloc').save(file.path)
-      assert_equal Webloc.new('https://github.com/peterc/webloc').data, File.read(file.path)
+      assert_equal Webloc.new('https://github.com/peterc/webloc').data, File.read(file.path).b
     ensure
       file.close
       file.unlink

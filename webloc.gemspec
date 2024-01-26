@@ -7,10 +7,10 @@ Gem::Specification.new do |s|
   s.version     = Webloc::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Peter Cooper"]
-  s.email       = ["peter@petercooper.co.uk"]
-  s.homepage    = "http://github.com/peterc/webloc"
-  s.summary     = %q{Reads and writes .webloc files on OS X}
-  s.description = %q{Webloc reads and writes .webloc files on OS X}
+  s.email       = ["git@peterc.org"]
+  s.homepage    = "https://github.com/peterc/webloc"
+  s.summary     = %q{Reads and writes .webloc files on macOS}
+  s.description = %q{Webloc reads and writes .webloc files on macOS}
 
   s.rubyforge_project = "webloc"
 
