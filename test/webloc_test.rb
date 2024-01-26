@@ -20,18 +20,23 @@ class WeblocTest < Test::Unit::TestCase
   end
   
   def test_webloc_generates_valid_data
-    data = File.read(File.dirname(__FILE__) + '/oldstyle.webloc')
+    data = File.read(File.dirname(__FILE__) + '/oldstyle.webloc').b
     assert_equal data, Webloc.new('https://github.com/peterc/webloc').data
+  end
+
+  def test_webloc_can_handle_long_urls
+    url = "http://example.com/this-is-a-very-long-url-indeed-it-should-easily-go-over-110-characters-for-our-testing-purposes"
+    assert_nothing_raised { Webloc.new(url).data }
   end
 
   def test_webloc_can_write_file
     file = Tempfile.new('test-webloc')
     begin
       Webloc.new('https://github.com/peterc/webloc').save(file.path)
-      assert_equal Webloc.new('https://github.com/peterc/webloc').data, File.read(file.path)
+      assert_equal Webloc.new('https://github.com/peterc/webloc').data, File.read(file.path).b
     ensure
-       file.close
-       file.unlink
+      file.close
+      file.unlink
     end    
   end
 end

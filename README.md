@@ -1,8 +1,8 @@
 # webloc
 
-*webloc* is a Ruby library that can read from and write to <tt>.webloc</tt> files as used on macOS.
+*webloc* is a Ruby library that can read from and write to <tt>.webloc</tt> files as used on macOS. These are a variant of 'plist' format files, specifically used for storing links to URLs.
 
-It works on Ruby 1.8.7 and up, including Ruby 3.x. It appears to still work on macOS Monterey too, so I have made a quick tidy up and release for 2022!
+It works on Ruby 2.7 and up, including Ruby 3.x, and supports URLs of up to 255 characters in length.
 
 ## Installation
 
@@ -18,8 +18,13 @@ Writing to a .webloc file:
 
     Webloc.new('https://rubyweekly.com/').save('rubyweekly.webloc')
 
+## Thanks
+
+Thanks is due to Christos Karaiskos for [this article](https://medium.com/@karaiskc/understanding-apples-binary-property-list-format-281e6da00dbd
+) which helped me understand the plist format a bit more when fixing a bug in 2024.
+
 ## License
 
-Copyright (C) 2011-2022 Peter Cooper
+Copyright (C) 2011-2024 Peter Cooper
 
 webloc is licensed under the terms of the MIT License
