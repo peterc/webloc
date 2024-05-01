@@ -25,7 +25,7 @@ class WeblocTest < Test::Unit::TestCase
   end
 
   def test_webloc_can_handle_long_urls
-    url = "http://example.com/this-is-a-very-long-url-indeed-it-should-easily-go-over-110-characters-for-our-testing-purposes"
+    url = "http://example.com/this-is-a-very-long-url-indeed-it-should-easily-go-over-110-characters-for-our-testing-purposes-lets-make-it-a-big-longer-to-get-up-to-the-two-hundred-and-fifty-five-limit-just-a-little-bit-further-to-go-nearly-there-1"
     assert_nothing_raised { Webloc.new(url).data }
   end
 
