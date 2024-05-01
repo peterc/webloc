@@ -13,9 +13,16 @@ class Webloc
     
     if data !~ /\<plist/
       offset = (data =~ /SURL_/)
-      length = data[offset + 6]
-      length = length.ord rescue length
-      url = data[offset + 7,length]  
+      length_offset = 7
+      if data[offset + 5] == "\x10"
+        length = data[offset + 6]
+        length = length.unpack('C')[0]  
+      elsif data[offset + 5] == "\x11"
+        length_offset = 8
+        length = data[offset + 6] + data[offset + 7]
+        length = length.unpack('S>')[0]  
+      end
+      url = data[offset + length_offset,length]
     else
       url = Plist::parse_xml(filename)['URL'] rescue nil
     end
@@ -30,10 +37,18 @@ class Webloc
 
     # PLIST OBJECT TABLE
     @data += "\xD1\x01\x02".bytes   # object 1 is a dictionary
-    @data += "\x53URL".bytes        # object 2 is an ASCII string of length 3
-    @data += "\x5f\x10".bytes       # object 3 is an ASCII string with a variable length length encoding (I know..)
-                              #   .. the '0' in \x10 denotes the length can be encoded within 2**0 bytes (i.e. 1!)
-    @data += @url.length.chr.bytes  # and here is that one byte..
+    @data += "SURL".bytes           # object 2
+
+    length_suffix = @url.length > 255 ? "\x11" : "\x10"
+    @data += ("\x5f" + length_suffix).bytes       # object 3 is an ASCII string with a variable length length encoding (I know..)
+                              #   .. the '0' in \x10 denotes the length can be encoded within 2**0 bytes (i.e. 1)
+                              #   .. the '1' in \x11 denotes the length can be encoded within 2**1 bytes (i.e. 2)
+    
+    if @url.length > 255
+      @data += [@url.length].pack('S>').bytes
+    else
+      @data += [@url.length].pack('C').bytes
+    end
     @data += @url.bytes             # and finally the URL itself
 
     # This is the offset table
@@ -52,7 +67,7 @@ class Webloc
     # Bytes 16-23 are for an offset from the offset table
     @data += "\x00\x00\x00\x00\x00\x00\x00\x00".bytes
     # Bytes 24-31 denote the position of the offset table from the start of the file
-    @data += "\x00\x00\x00\x00\x00\x00\x00".bytes + (@url.length + 18).chr.bytes
+    @data += "\x00\x00\x00\x00\x00\x00".bytes + [@url.length + 18].pack('S>').bytes
 
     @data = @data.pack('C*')
   end
