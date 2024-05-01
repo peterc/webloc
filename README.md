@@ -2,7 +2,7 @@
 
 *webloc* is a Ruby library that can read from and write to <tt>.webloc</tt> files as used on macOS. These are a variant of 'plist' format files, specifically used for storing links to URLs.
 
-It works on Ruby 2.7 and up, including Ruby 3.x, and supports URLs of up to 237 characters in length (but am currently working on extending this).
+It works on Ruby 2.7 and up, including Ruby 3.x, and supports URLs of up to 2048 characters in length (and probably longer, but this is around the de facto limit for URLs in most systems).
 
 ## Installation
 
