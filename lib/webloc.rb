@@ -1,18 +1,52 @@
 require 'plist'
 
 class Webloc
+  class WeblocError < StandardError; end
+  class FileNotFoundError < WeblocError; end
+  class CorruptedFileError < WeblocError; end
+  class InvalidFormatError < WeblocError; end
+  class EmptyFileError < WeblocError; end
+
   attr_accessor :url
 
   def initialize(url)
+    raise ArgumentError, "URL cannot be nil or empty" if url.nil? || url.empty?
     @url = url
   end
 
   def self.load(filename)
-    data = File.read(filename)
+    raise FileNotFoundError, "File not found: #{filename}" unless File.exist?(filename)
+    
+    begin
+      data = File.read(filename)
+    rescue => e
+      raise FileNotFoundError, "Unable to read file '#{filename}': #{e.message}"
+    end
+    
+    raise EmptyFileError, "File is empty: #{filename}" if data.empty?
+    
     data = data.force_encoding('binary') rescue data
+    url = nil
     
     if data !~ /\<plist/
-      offset = (data =~ /SURL_/)
+      # Handle binary plist format
+      url = parse_binary_format(data, filename)
+    else
+      # Handle XML plist format
+      url = parse_xml_format(filename)
+    end
+    
+    raise CorruptedFileError, "No URL found in webloc file: #{filename}" if url.nil? || url.empty?
+    new(url)
+  end
+
+  private
+
+  def self.parse_binary_format(data, filename)
+    offset = (data =~ /SURL_/)
+    raise InvalidFormatError, "Invalid binary webloc format - missing SURL marker in file: #{filename}" unless offset
+    
+    begin
       length_offset = 7
       if data[offset + 5] == "\x10"
         length = data[offset + 6]
@@ -21,15 +55,42 @@ class Webloc
         length_offset = 8
         length = data[offset + 6] + data[offset + 7]
         length = length.unpack('S>')[0]  
+      else
+        raise InvalidFormatError, "Unsupported length encoding in binary webloc file: #{filename}"
       end
-      url = data[offset + length_offset,length]
-    else
-      url = Plist::parse_xml(filename)['URL'] rescue nil
+      
+      raise CorruptedFileError, "Invalid URL length (#{length}) in file: #{filename}" if length <= 0 || length > data.length
+      
+      url = data[offset + length_offset, length]
+      raise CorruptedFileError, "Extracted URL is empty from file: #{filename}" if url.nil? || url.empty?
+      
+      url
+    rescue CorruptedFileError, InvalidFormatError => e
+      raise e
+    rescue => e
+      raise CorruptedFileError, "Failed to parse binary webloc format in file '#{filename}': #{e.message}"
     end
-    
-    raise ArgumentError unless url
-    new(url)
   end
+
+  def self.parse_xml_format(filename)
+    begin
+      plist_data = Plist::parse_xml(filename)
+      raise InvalidFormatError, "Invalid XML plist format - could not parse file: #{filename}" unless plist_data.is_a?(Hash)
+      
+      url = plist_data['URL']
+      raise CorruptedFileError, "No 'URL' key found in plist file: #{filename}" unless url
+      
+      url
+    rescue => e
+      if e.message.include?('parse') || e.message.include?('XML') || e.message.include?('plist')
+        raise InvalidFormatError, "Invalid XML plist format in file '#{filename}': #{e.message}"
+      else
+        raise CorruptedFileError, "Failed to parse XML webloc format in file '#{filename}': #{e.message}"
+      end
+    end
+  end
+
+  public
 
   def data
     # PLIST HEADER
@@ -73,6 +134,12 @@ class Webloc
   end
   
   def save(filename)
-    File.open(filename, 'wb') { |f| f.write data }
+    raise ArgumentError, "Filename cannot be nil or empty" if filename.nil? || filename.empty?
+    
+    begin
+      File.open(filename, 'wb') { |f| f.write data }
+    rescue => e
+      raise WeblocError, "Failed to save webloc file '#{filename}': #{e.message}"
+    end
   end
 end
