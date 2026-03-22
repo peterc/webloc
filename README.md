@@ -2,7 +2,7 @@
 
 *webloc* is a Ruby library that can read from and write to <tt>.webloc</tt> files as used on macOS. These are a variant of 'plist' format files, specifically used for storing links to URLs.
 
-It works on Ruby 2.7 and up, including Ruby 3.x, and supports URLs of up to 2048 characters in length (and probably longer, but this is around the de facto limit for URLs in most systems).
+It works on Ruby 3.0 and up (including Ruby 4.0.2 and TruffleRuby) and supports URLs of up to 2048 characters in length (and probably longer, but this is around the de facto limit for URLs in most systems).
 
 ## Installation
 
@@ -23,35 +23,6 @@ Writing to a .webloc file:
     Webloc.new('https://rubyweekly.com/').save('rubyweekly.webloc')
 
 ### Advanced Examples
-
-#### Processing multiple .webloc files
-
-```ruby
-require 'webloc'
-
-Dir.glob('*.webloc').each do |file|
-  webloc = Webloc.load(file)
-  puts "#{file}: #{webloc.url}"
-end
-```
-
-#### Creating webloc files from a list of URLs
-
-```ruby
-require 'webloc'
-
-urls = [
-  'https://github.com',
-  'https://stackoverflow.com',
-  'https://ruby-lang.org'
-]
-
-urls.each_with_index do |url, index|
-  filename = "bookmark_#{index + 1}.webloc"
-  Webloc.new(url).save(filename)
-  puts "Created #{filename}"
-end
-```
 
 #### Error handling
 
@@ -125,6 +96,6 @@ Thanks is due to Christos Karaiskos for [this article](https://medium.com/@karai
 
 ## License
 
-Copyright (C) 2011-2025 Peter Cooper
+Copyright (C) 2011-2026 Peter Cooper
 
 webloc is licensed under the terms of the MIT License

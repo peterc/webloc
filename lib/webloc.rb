@@ -94,7 +94,7 @@ class Webloc
 
   def data
     # PLIST HEADER
-    @data = "bplist\x30\x30".bytes
+    @data = "bplist00".bytes
 
     # PLIST OBJECT TABLE
     @data += "\xD1\x01\x02".bytes   # object 1 is a dictionary
