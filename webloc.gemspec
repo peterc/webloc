@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 3.0"
 
-  s.files         = Dir["lib/**/*", "LICENSE", "README.md"]
+  s.files         = Dir["lib/**/*", "LICENSE", "README.md", "CHANGELOG.md"]
   s.require_paths = ["lib"]
 
   s.add_dependency 'plist'
