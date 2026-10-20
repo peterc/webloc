@@ -2,7 +2,7 @@
 
 *webloc* is a Ruby library that can read from and write to <tt>.webloc</tt> files as used on macOS. These are a variant of 'plist' format files, specifically used for storing links to URLs.
 
-It works on Ruby 3.0 and up (including Ruby 4.0.2 and TruffleRuby) and supports URLs of up to 2048 characters in length (and probably longer, but this is around the de facto limit for URLs in most systems).
+It works on Ruby 3.0 and up (including Ruby 4.0.2 and TruffleRuby). It reads XML and binary plist files and writes binary plist files, supporting Unicode and URLs longer than 65,535 characters.
 
 ## Installation
 
@@ -14,12 +14,14 @@ It works on Ruby 3.0 and up (including Ruby 4.0.2 and TruffleRuby) and supports 
 
 Reading a .webloc file:
 
+    require 'webloc'
     webloc = Webloc.load('bookmark.webloc')
     puts webloc.url
     # => "https://example.com"
 
 Writing to a .webloc file:
 
+    require 'webloc'
     Webloc.new('https://rubyweekly.com/').save('rubyweekly.webloc')
 
 ### Advanced Examples
@@ -88,6 +90,27 @@ File.write('bookmark.json', JSON.pretty_generate(json_data))
 json_content = JSON.parse(File.read('bookmark.json'))
 Webloc.new(json_content['url']).save('restored.webloc')
 ```
+
+## Compatibility
+
+The public methods and error classes are unchanged. The reader also recovers
+historical long-URL files with the known offset bugs. New writes correct those
+offsets; short ASCII URLs retain their original binary encoding.
+Binary reading supports short URLs, additional metadata, and different object orders.
+URLs are stored as supplied, without escaping or scheme validation. Unicode
+strings use UTF-16 in binary files and are returned as UTF-8 when read.
+
+Malformed files without a recoverable historical layout raise a `WeblocError`
+subclass instead of returning a partial URL.
+
+## Development
+
+Run `bundle install` followed by `bundle exec rake test`.
+
+The suite retains the original tests and fixtures and exercises the Ruby examples
+in this README. Additional fixtures cover other binary layouts and files written
+by older releases. Interoperability tests use Python 3's `plistlib` when available
+and Apple's `plutil` on macOS; neither is a runtime dependency of the gem.
 
 ## Thanks
 
