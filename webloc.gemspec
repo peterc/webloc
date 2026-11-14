@@ -17,6 +17,4 @@ Gem::Specification.new do |s|
 
   s.files         = Dir["lib/**/*", "LICENSE", "README.md", "CHANGELOG.md"]
   s.require_paths = ["lib"]
-
-  s.add_dependency 'plist'
 end

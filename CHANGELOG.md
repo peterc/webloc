@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Read XML plist files with a built-in single-pass parser and remove the `plist`
+  gem dependency. The gem passed `<data>` elements to `Marshal.load` and took
+  quadratic time on unterminated comments.
+- Reject XML files that are truncated, have a key without a value, have text
+  outside elements, or have a comment inside a key or the URL string. A
+  non-string `URL` value in XML always raises `CorruptedFileError`.
+
 ## 0.4.0
 
 - Rewrite binary plist reading to follow object references and offsets, supporting

@@ -8,6 +8,20 @@ require 'minitest/autorun'
 require 'webloc'
 require 'tempfile'
 
+class MarshalProbe
+  class << self
+    attr_accessor :loaded
+  end
+
+  def marshal_dump
+    'probe'
+  end
+
+  def marshal_load(_)
+    self.class.loaded = true
+  end
+end
+
 class WeblocTest < Minitest::Test
   def test_webloc_object_requires_url
     assert_raises(ArgumentError) { Webloc.new }
@@ -124,6 +138,21 @@ class WeblocTest < Minitest::Test
       file.close
       error = assert_raises(Webloc::InvalidFormatError) { Webloc.load(file.path) }
       assert_match(/No 'URL' key found in plist file/, error.message)
+    ensure
+      file.unlink
+    end
+  end
+
+  def test_load_does_not_unmarshal_xml_data_elements
+    payload = [Marshal.dump(MarshalProbe.new)].pack('m')
+    file = Tempfile.new('marshal-webloc')
+    begin
+      file.write("<plist><dict><key>URL</key><string>https://example.com</string>" \
+                 "<key>Extra</key><data>#{payload}</data></dict></plist>")
+      file.close
+      MarshalProbe.loaded = false
+      assert_equal 'https://example.com', Webloc.load(file.path).url
+      refute MarshalProbe.loaded
     ensure
       file.unlink
     end
