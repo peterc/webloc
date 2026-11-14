@@ -100,6 +100,12 @@ Binary reading supports short URLs, additional metadata, and different object or
 URLs are stored as supplied, without escaping or scheme validation. Unicode
 strings use UTF-16 in binary files and are returned as UTF-8 when read.
 
+XML files are read by a built-in parser that takes the `URL` string from the root
+dictionary and has no gem dependencies. It reads the document as UTF-8, or as
+US-ASCII, ISO-8859-1 or windows-1252 when the XML declaration names one of them,
+and accepts the five predefined entities, numeric character references, and CDATA
+sections. It rejects internal DTD subsets and other declared encodings.
+
 Malformed files without a recoverable historical layout raise a `WeblocError`
 subclass instead of returning a partial URL.
 
